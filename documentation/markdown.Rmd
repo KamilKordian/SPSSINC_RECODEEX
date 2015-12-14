@@ -1,0 +1,95 @@
+<!-- rmarkdown v1 -->
+SPSSINC RECODEEX Extension Command
+==================================
+
+Recode variables into other variables with optional variable and value label generation
+and support for dates.
+
+SPSSINC RECODEEX *inputvarlist*^&#42; = *outputvarlist*^&#42;
+
+/RECODES "*(input value(s) = recode)*^&#42; ...   
+(else=COPY^&#42;&#42; or SYSMIS})"
+
+/OPTIONS STRINGSIZE=*n*  
+VALUELABELS=YES^&#42;&#42; or NO  
+USEINPUTVALLABELS=NO^&#42;&#42; or YES  
+COPYVARIABLELABELS=YES^&#42;&#42; or NO  
+SUFFIX="*value*"   
+PREFIX="*value*"
+
+/HELP
+
+^&#42; Required  
+^&#42;&#42; Default
+
+SPSSINC RECODEEX /HELP displays this help and does nothing else.
+
+Examples:
+```
+RECODEEX fatherage motherage = fatheragerc motheragerc
+/RECODES "(LO THRU 50=1) (51 thru 75=2) (ELSE=COPY)"
+/OPTIONS SUFFIX="rc".
+
+RECODEEX bdate = bdaterc
+/RECODES "(LO THRU 1950-12-31=1)(1951-01-01 THRU 1990-12-31=2)".
+
+RECODE duration = durationrc
+/RECODES "(LO THRU 10 12:00:00=1)(10 12:00:00 THRU HIGH=2)".
+```
+
+This command extends the built-in RECODE command in several ways.
+* Date or time constants are used for variables of these types
+* Value labels can be automatically generated for the outputs
+* Variable labels can be copied
+* Variable types can be changed for the output variables.
+
+**inputvarlist** specifies the variables to be recoded.  
+They must all have the same type
+(numeric, string, a date format, or a time format).  
+MOYR, WKYR and WKDAY formats are not supported.
+
+**outputvarlist** specifies an equal number of variables for the results.
+If **STRINGSIZE** is specified,
+the output variables will all be made strings of that length.
+The type of any existing variables will be
+changed to match if necessary.  If STRINGSIZE is not specified, no variable types
+will be changed, and any new variables will be numeric.
+A variable cannot be used as both an input and output variable.
+
+RECODE
+------
+Recode specifications have the same general form as for the RECODE command:  
+```
+(input-values = output-value)
+```
+See the RECODE command for details.
+Unlike the RECODE commmand, *the entire recode value specification* must be enclosed in quotes.
+Input or output string values must also be quoted.
+
+If the variables have a date format, recode values have the form *yyyy-mm-dd*.
+If the values have a time format, recode values have the form `hh:mm`, `hh:mm:ss.ss`
+or these forms preceded by days, e.g., `10 08:03`.
+
+OPTIONS
+-------
+**STRINGSIZE** specifies that the output variables should all be strings of that
+length (in bytes).
+
+**VALUELABELS** specifies whether value labels should be created for the output values.
+They will consist of the input values that are mapped to each output with two caveats:
+An else specification does not contribute to the labels.
+If an input value is mapped to more than one output value, it will appear in each corresponding
+value label even though the RECODE command processes from left to right.
+If the generated label is too long, it is truncated and ... is appended.
+
+**USEINPUTVALLABELS** specifies whether the created value labels
+should contain the input values or their value labels.  This
+keyword is ignored if VALUELABELS=NO.  If the input value
+labels are used and a range specification appears, that
+specification is used as the value label.
+
+If **COPYVARIABLELABELS**=YES, the variable label, if any, of each input variable
+will be copied to the output variable.  **PREFIX** and **SUFFIX** can specify text to be
+prepended or appended to the label with a separating blank.
+
+(C) Copyright IBM Corp. 1989, 2014

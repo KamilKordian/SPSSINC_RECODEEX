@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>SPSSINC RECODEEX Extension Command</title>
+
+<link rel="stylesheet" type="text/css" href="extsyntax.css" />
+
+
+
+
+
+</head>
+
+<body>
+<!-- rmarkdown v1 -->
+
+<h1>SPSSINC RECODEEX Extension Command</h1>
+
+<p>Recode variables into other variables with optional variable and value label generation
+and support for dates.</p>
+<div class="syntax">
+<p>SPSSINC RECODEEX <em>inputvarlist</em><sup>&#42;</sup> = <em>outputvarlist</em><sup>&#42;</sup></p>
+
+<p>/RECODES &ldquo;<em>(input value(s) = recode)</em><sup>&#42;</sup> &hellip;<br/>
+(else=COPY<sup>&#42;&#42;</sup> or SYSMIS})&rdquo;</p>
+
+<p>/OPTIONS STRINGSIZE=<em>n</em><br/>
+VALUELABELS=YES<sup>&#42;&#42;</sup> or NO<br/>
+USEINPUTVALLABELS=NO<sup>&#42;&#42;</sup> or YES<br/>
+COPYVARIABLELABELS=YES<sup>&#42;&#42;</sup> or NO<br/>
+SUFFIX=&ldquo;<em>value</em>&rdquo;<br/>
+PREFIX=&ldquo;<em>value</em>&rdquo;</p>
+
+<p>/HELP</p>
+
+<p><sup>&#42;</sup> Required<br/>
+<sup>&#42;&#42;</sup> Default</p>
+</div>
+<p>SPSSINC RECODEEX /HELP displays this help and does nothing else.</p>
+
+
+<pre class="example"><code>RECODEEX fatherage motherage = fatheragerc motheragerc
+/RECODES &quot;(LO THRU 50=1) (51 thru 75=2) (ELSE=COPY)&quot;
+/OPTIONS SUFFIX=&quot;rc&quot;.
+
+RECODEEX bdate = bdaterc
+/RECODES &quot;(LO THRU 1950-12-31=1)(1951-01-01 THRU 1990-12-31=2)&quot;.
+
+RECODE duration = durationrc
+/RECODES &quot;(LO THRU 10 12:00:00=1)(10 12:00:00 THRU HIGH=2)&quot;.
+</code></pre>
+
+<p>This command extends the built-in RECODE command in several ways.</p>
+
+<ul>
+<li>Date or time constants are used for variables of these types</li>
+<li>Value labels can be automatically generated for the outputs</li>
+<li>Variable labels can be copied</li>
+<li>Variable types can be changed for the output variables.</li>
+</ul>
+
+<p><strong>inputvarlist</strong> specifies the variables to be recoded.<br/>
+They must all have the same type
+(numeric, string, a date format, or a time format).<br/>
+MOYR, WKYR and WKDAY formats are not supported.</p>
+
+<p><strong>outputvarlist</strong> specifies an equal number of variables for the results.
+If <strong>STRINGSIZE</strong> is specified,
+the output variables will all be made strings of that length.
+The type of any existing variables will be
+changed to match if necessary.  If STRINGSIZE is not specified, no variable types
+will be changed, and any new variables will be numeric.
+A variable cannot be used as both an input and output variable.</p>
+
+<h2>RECODE</h2>
+
+<p>Recode specifications have the same general form as for the RECODE command:  </p>
+
+<pre><code>(input-values = output-value)
+</code></pre>
+
+<p>See the RECODE command for details.
+Unlike the RECODE commmand, <em>the entire recode value specification</em> must be enclosed in quotes.
+Input or output string values must also be quoted.</p>
+
+<p>If the variables have a date format, recode values have the form <em>yyyy-mm-dd</em>.
+If the values have a time format, recode values have the form <code>hh:mm</code>, <code>hh:mm:ss.ss</code>
+or these forms preceded by days, e.g., <code>10 08:03</code>.</p>
+
+<h2>OPTIONS</h2>
+
+<p><strong>STRINGSIZE</strong> specifies that the output variables should all be strings of that
+length (in bytes).</p>
+
+<p><strong>VALUELABELS</strong> specifies whether value labels should be created for the output values.
+They will consist of the input values that are mapped to each output with two caveats:
+An else specification does not contribute to the labels.
+If an input value is mapped to more than one output value, it will appear in each corresponding
+value label even though the RECODE command processes from left to right.
+If the generated label is too long, it is truncated and &hellip; is appended.</p>
+
+<p><strong>USEINPUTVALLABELS</strong> specifies whether the created value labels
+should contain the input values or their value labels.  This
+keyword is ignored if VALUELABELS=NO.  If the input value
+labels are used and a range specification appears, that
+specification is used as the value label.</p>
+
+<p>If <strong>COPYVARIABLELABELS</strong>=YES, the variable label, if any, of each input variable
+will be copied to the output variable.  <strong>PREFIX</strong> and <strong>SUFFIX</strong> can specify text to be
+prepended or appended to the label with a separating blank.</p>
+
+<p>&copy; Copyright IBM Corp. 1989, 2014</p>
+
+</body>
+
+</html>
+
