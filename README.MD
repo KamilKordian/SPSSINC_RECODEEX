@@ -5,7 +5,7 @@ This command extends the built-in RECODE command in several ways. Date or time c
 ---
 Requirements
 ----
-- IBM SPSS Statistics 18 or later
+- IBM SPSS Statistics 18 or later and the corresponding IBM SPSS Statistics-Integration Plug-in for Python.
 
 ---
 Installation intructions
